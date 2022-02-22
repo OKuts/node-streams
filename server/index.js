@@ -28,10 +28,10 @@ server.on('request', (req, res) => {
     stream.on('error', (error) => {
         if (error.code === 'ENOENT') {
             res.statusCode = 404;
-            res.end('file not found')
+            res.end('file not found');
         } else {
             res.statusCode = 500;
-            res.end('server error')
+            res.end('server error');
         }
     });
     req.on('aborted', () => {
