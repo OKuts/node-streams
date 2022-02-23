@@ -1,40 +1,28 @@
 const express = require('express');
-const path = require("path");
+const mongoose = require('mongoose');
+const postRoutes = require('./routes/post-routes');
+const path = require('path');
+
 const app = express();
 
 const PORT = 3000;
+const db = 'mongodb+srv://violet:violet@cluster0.gkivl.mongodb.net/webdata?retryWrites=true&w=majority';
+
+mongoose
+    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then((res) => { console.log('connected to DB') })
+    .catch((error) => { console.log(555, error) });
 
 app.listen(PORT, (error) => {
     console.log(error ? error : `Server run on port ${PORT}`);
 });
 
-const createPath = page => path.resolve(__dirname, 'views', `${page}.html`)
-
-app.use((req, res, next) => {
-    console.log(req.path);
-    next();
-})
-
-app.use((_, __, next) => {
-    console.log(_.query);
-    next();
-})
-
-
-app.get('/', (req, res) => {
-    res.sendFile(createPath('index'));
-})
-
-app.get('/contacts', (req, res) => {
-    res.sendFile(createPath('contacts'));
-})
-
-app.get('/about-us', (req, res) => {
-    res.redirect('/contacts');
-})
+app.use(express.urlencoded({extended: false}));
+app.use(express.static('views'));
+app.use(postRoutes);
 
 app.use((req, res) => {
     res
         .status(404)
-        .sendFile(createPath('error'));
-})
+        .sendFile(path.resolve(__dirname, 'views', 'error.html'));
+});
